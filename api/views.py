@@ -7,7 +7,6 @@ from api.models import *
 import re
 
 
-
 '''
 Helper functions
 '''
@@ -42,7 +41,6 @@ def get_email_from_role(name):
 
 
 
-
 '''
     Send email and password entered by the user to get his name(id) and role
 '''
@@ -59,16 +57,17 @@ def login(request):
         if role == 'Invalid email':
             return Response({
                 'message': 'Invalid email or password',
-                'status':402
+                'status':400
             })
         password = data['password']
         if password != extract_password(email):
             return Response({
                 'message': 'Invalid email or password',
-                'status':402
+                'status':400
             })
         return Response({
             'name': extract_password(email),
+            'email': email,
             'status': 200,
             'role': role
         })
@@ -76,8 +75,9 @@ def login(request):
         return Response({
             "status": 500,
             "message": 'Internal server error',
-            "error": str(e)
+            "error": str(e),
         })
+
 
 '''
     Send name(got from login) and role to get first_name, last_name and ID
@@ -118,7 +118,7 @@ def whoami(request):
         except IndexError as e:
             return Response({
                 'message': 'User not found',
-                'status':402
+                'status': 400
             })
         return Response({
             "first_name": first_name,
@@ -136,6 +136,9 @@ def whoami(request):
 
 
 '''
+    TODO: Return the response in names instead of ids
+'''
+'''
     Send the email of the supervisor to get all the requests made to him.
 '''
 @api_view(['POST'])
@@ -152,11 +155,11 @@ def supervisor_requests(request):
         result_list = []
         for row in raw_query_set:
             result_list.append({
-                'out_request_id': row[0],
-                'out_student_id': row[1],
-                'out_project_id': row[2],
-                'out_equipment_id': row[3],
-                'out_equipment_name': row[4]
+                'request_id': row[0],
+                'student_id': row[1],
+                'project_id': row[2],
+                'equipment_id': row[3],
+                'equipment_name': row[4]
             })
 
         return Response({
@@ -188,11 +191,11 @@ def faculty_incharge_requests(request):
         result_list = []
         for row in raw_query_set:
             result_list.append({
-                'out_request_id': row[0],
-                'out_student_id': row[1],
-                'out_project_id': row[2],
-                'out_equipment_id': row[3],
-                'out_equipment_name': row[4]
+                'request_id': row[0],
+                'student_id': row[1],
+                'project_id': row[2],
+                'equipment_id': row[3],
+                'equipment_name': row[4]
             })
         return Response({
             "status": 200,
@@ -220,11 +223,11 @@ def lab_staff_requests(request):
         result_list = []
         for row in raw_query_set:
             result_list.append({
-                'out_request_id': row[0],
-                'out_student_id': row[1],
-                'out_project_id': row[2],
-                'out_equipment_id': row[3],
-                'out_equipment_name': row[4]
+                'request_id': row[0],
+                'student_id': row[1],
+                'project_id': row[2],
+                'equipment_id': row[3],
+                'equipment_name': row[4]
             })
         return Response({
             "status": 200,
@@ -239,7 +242,7 @@ def lab_staff_requests(request):
 
 
 '''
-    Send request_id and action string as 'true' or 'false'
+    Send request_id, email and action string as 'true' or 'false'
 '''
 @api_view(['POST'])
 def take_action_supervisor(request):
@@ -258,7 +261,7 @@ def take_action_supervisor(request):
         except django.db.utils.InternalError as e:
             return Response({
                 'message': 'Exception raised while taking action for supervisor',
-                'status':500,
+                'status': 500,
                 'error': str(e)
             })
         return Response({
@@ -269,13 +272,13 @@ def take_action_supervisor(request):
     except Exception as e:
         return Response({
             'message': 'Internal error',
-            'status':500,
+            'status': 500,
             'error': str(e)
         })
 
 
 '''
-    Send request_id and action string as 'true' or 'false'
+    Send request_id, email and action string as 'true' or 'false'
 '''
 @api_view(['POST'])
 def take_action_faculty_incharge(request):
@@ -311,7 +314,7 @@ def take_action_faculty_incharge(request):
 
 
 '''
-    Send the request_id  and the action string as 'true' or 'false'
+    Send the request_id, email and the action string as 'true' or 'false'
 '''
 @api_view(['POST'])
 def take_action_lab_incharge(request):
@@ -344,3 +347,9 @@ def take_action_lab_incharge(request):
             'status': 500,
             'error': str(e)
         })
+
+
+'''
+    TODO: Add calculate_work_time for student
+    TODO: Make sure all triggers are executed properly
+'''
