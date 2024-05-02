@@ -12,4 +12,7 @@ urlpatterns = [
     path('supervisor/action/', views.take_action_supervisor, name='take_action_supervisor'),
     path('faculty_incharge/action/', views.take_action_faculty_incharge, name='take_action_faculty_incharge'),
     path('lab_incharge/action', views.take_action_lab_incharge, name='take_action_lab_incharge'),
+    path('equipment/all', views.equipment_details, name='equipment_details'),
+    path('slot/booked',views.project_details, name='project_details'),
+    path('project/add_student', views.project_table_update, name='project_table_update'),
 ]
