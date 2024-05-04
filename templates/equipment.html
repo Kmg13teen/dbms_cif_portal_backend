@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Equipment List</h1>
+    <button id="fetch-button">Fetch Equipment List</button> <!-- Added button -->
+    <table id="equipment-table">
+        <thead>
+            <tr>
+                <th>Equipment ID</th>
+                <th>Equipment Name</th>
+                <th>Staff Incharge</th>
+                <th>Faculty Incharge</th>
+            </tr>
+        </thead>
+        <tbody id="equipment-table-body">
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Function to fetch equipment list
+            function fetchEquipmentList() {
+                fetch('/api/equipment/all')
+                .then(response => response.json())
+                .then(data => {
+                    // Check if response status is success
+                    if (data.status === 200) {
+                        const equipmentList = data.equipment_list;
+                        const tableBody = document.getElementById('equipment-table-body');
+                        
+                        // Clear existing table rows
+                        tableBody.innerHTML = '';
+                        
+                        // Loop through equipment list and create table rows
+                        equipmentList.forEach(equipment => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${equipment.equipment_id}</td>
+                                <td>${equipment.equipment_name}</td>
+                                <td>${equipment.staff_incharge_name}</td>
+                                <td>${equipment.faculty_incharge_name}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Failed to fetch equipment list');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching equipment list:', error);
+                });
+            }
+
+            // Fetch equipment list initially
+            fetchEquipmentList();
+
+            // Add click event listener to the button
+            document.getElementById('fetch-button').addEventListener('click', fetchEquipmentList);
+        });
+    </script>
+</body>
+</html>
